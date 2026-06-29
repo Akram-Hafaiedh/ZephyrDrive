@@ -3,8 +3,8 @@ import './globals.css'
 import Cursor from '@/components/ui/Cursor'
 
 export const metadata: Metadata = {
-  title: 'Aether Runner | Interactive 3D Configurator',
-  description: 'A high-fidelity 3D product customizer',
+  title: 'ZephyrDrive | Digital 3D Car Showroom',
+  description: 'An interactive 3D car showroom — browse, compare, and configure vehicles in real time.',
 }
 
 export default function RootLayout({
