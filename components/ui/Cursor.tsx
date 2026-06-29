@@ -46,11 +46,11 @@ export default function Cursor() {
                 animate={{
                     width: hovering ? 64 : 16,
                     height: hovering ? 64 : 16,
-                    backgroundColor: hovering ? 'transparent' : '#fff',
+                    backgroundColor: hovering ? 'rgba(255,255,255,0)' : '#fff',
                     borderColor: '#fff',
                     borderWidth: hovering ? 2 : 0,
                 }}
-                className="rounded-full bg-white flex items-center justify-center text-xs text-black"
+                className="rounded-full bg-white flex items-center justify-center text-xs text-black pointer-events-none"
             >
                 {hovering && 'View'}
             </motion.div>
