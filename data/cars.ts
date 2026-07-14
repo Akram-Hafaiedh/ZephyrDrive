@@ -105,6 +105,52 @@ export const cars: Car[] = [
                     { name: 'Speed Yellow', value: '#f5d020' },
                     { name: 'Gloss Black', value: '#111111' },
                 ]
+            },
+            {
+                id: 'windows',
+                label: 'Window Tint',
+                type: 'color',
+                paintTargets: ['window'],
+                options: [
+                    { name: 'Clear Glass', value: '#ffffff' },
+                    { name: 'Smoke Tint', value: '#333333' },
+                    { name: 'Stealth Black', value: '#111111' },
+                ]
+            },
+            {
+                id: 'accents',
+                label: 'Carbon Accents',
+                type: 'color',
+                paintTargets: ['carbon', 'coloured'],
+                options: [
+                    { name: 'Matte Carbon', value: '#222222' },
+                    { name: 'Gloss Black', value: '#080808' },
+                    { name: 'Racing Yellow Accent', value: '#f5d020' },
+                ]
+            },
+            {
+                id: 'interior',
+                label: 'Cabin Leather',
+                type: 'color',
+                paintTargets: ['interiora'],
+                options: [
+                    { name: 'Black Nappa', value: '#151515' },
+                    { name: 'Classic Cognac', value: '#8b5a2b' },
+                    { name: 'Crayon White', value: '#dcdcdc' },
+                    { name: 'Racing Red', value: '#8b0000' },
+                ]
+            },
+            {
+                id: 'stitching',
+                label: 'Accent Stitching',
+                type: 'color',
+                paintTargets: ['interiorcolour', 'interiortill'],
+                options: [
+                    { name: 'Guards Red', value: '#c5172e' },
+                    { name: 'Racing Yellow', value: '#f5d020' },
+                    { name: 'Speed Blue', value: '#1f4e8c' },
+                    { name: 'Shadow Grey', value: '#555555' },
+                ]
             }
         ],
         description:
@@ -170,6 +216,52 @@ export const cars: Car[] = [
                     { name: 'Speed Yellow', value: '#f5d020' },
                     { name: 'Guards Red', value: '#c5172e' },
                     { name: 'Black', value: '#111111' },
+                ]
+            },
+            {
+                id: 'windows',
+                label: 'Window Tint',
+                type: 'color',
+                paintTargets: ['window'],
+                options: [
+                    { name: 'Clear Glass', value: '#ffffff' },
+                    { name: 'Smoke Tint', value: '#333333' },
+                    { name: 'Stealth Black', value: '#111111' },
+                ]
+            },
+            {
+                id: 'accents',
+                label: 'Carbon Accents',
+                type: 'color',
+                paintTargets: ['carbon', 'coloured'],
+                options: [
+                    { name: 'Matte Carbon', value: '#222222' },
+                    { name: 'Gloss Black', value: '#080808' },
+                    { name: 'Body Match Accent', value: '#aaaaaa' },
+                ]
+            },
+            {
+                id: 'interior',
+                label: 'Cabin Leather',
+                type: 'color',
+                paintTargets: ['interiora'],
+                options: [
+                    { name: 'Black Nappa', value: '#151515' },
+                    { name: 'Classic Cognac', value: '#8b5a2b' },
+                    { name: 'Crayon White', value: '#dcdcdc' },
+                    { name: 'Racing Red', value: '#8b0000' },
+                ]
+            },
+            {
+                id: 'stitching',
+                label: 'Accent Stitching',
+                type: 'color',
+                paintTargets: ['interiorcolour', 'interiortill'],
+                options: [
+                    { name: 'Guards Red', value: '#c5172e' },
+                    { name: 'Racing Yellow', value: '#f5d020' },
+                    { name: 'Speed Blue', value: '#1f4e8c' },
+                    { name: 'Shadow Grey', value: '#555555' },
                 ]
             }
         ],

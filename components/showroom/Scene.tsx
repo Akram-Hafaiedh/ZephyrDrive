@@ -24,7 +24,7 @@ export default function ShowroomScene({ modelPath, partConfigs, activePartId }: 
                 <spotLight position={[10, 12, 10]} angle={0.2} penumbra={1} intensity={1.2} castShadow />
                 <spotLight position={[-10, 8, -10]} angle={0.3} penumbra={1} intensity={0.4} />
                 <Suspense fallback={null}>
-                    <Bounds fit clip observe margin={1.2}>
+                    <Bounds fit clip margin={1.2}>
                         <CarModel modelPath={modelPath} partConfigs={partConfigs} activePartId={activePartId} />
                     </Bounds>
                     <Environment preset="city" />

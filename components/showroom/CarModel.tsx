@@ -102,6 +102,19 @@ export default function CarModel({ modelPath, partConfigs = [], activePartId }: 
                     if (matchingConfig && 'color' in mat) {
                         const standardMat = mat as THREE.MeshStandardMaterial
                         standardMat.color.set(matchingConfig.color)
+                        
+                        // Specialized window material handling for transparency/tint level
+                        if (matName.toLowerCase().includes('window')) {
+                            standardMat.transparent = true
+                            if (matchingConfig.color === '#ffffff') {
+                                standardMat.opacity = 0.25 // clear transparent glass
+                            } else if (matchingConfig.color === '#333333') {
+                                standardMat.opacity = 0.6 // smoke tint
+                            } else if (matchingConfig.color === '#111111') {
+                                standardMat.opacity = 0.85 // dark stealth tint
+                            }
+                        }
+                        
                         standardMat.needsUpdate = true
                     }
                 })
@@ -113,7 +126,14 @@ export default function CarModel({ modelPath, partConfigs = [], activePartId }: 
     useEffect(() => {
         if (!bounds || !cloned) return
 
-        if (activePartId === 'wheels' || activePartId === 'calipers') {
+        if (activePartId === 'interior' || activePartId === 'stitching') {
+            // Position the camera looking directly into the cockpit
+            const box = new THREE.Box3()
+            // The cabin center is typically at x=0, y=0.7 (steering wheel height), z=0.2 (front seats)
+            const cabinCenter = new THREE.Vector3(0, 0.7, 0.2)
+            box.setFromCenterAndSize(cabinCenter, new THREE.Vector3(2.0, 2.0, 2.0))
+            bounds.refresh(box).fit()
+        } else if (activePartId && activePartId !== 'body') {
             const targets: THREE.Object3D[] = []
             
             cloned.traverse((child) => {
@@ -126,9 +146,14 @@ export default function CarModel({ modelPath, partConfigs = [], activePartId }: 
                         const matName = mat.name ?? ''
                         if (activePartId === 'wheels') {
                             return matName.toLowerCase().includes('wheel')
-                        } else {
+                        } else if (activePartId === 'calipers') {
                             return matName.toLowerCase().includes('calip') || matName.toLowerCase().includes('calli')
+                        } else if (activePartId === 'windows') {
+                            return matName.toLowerCase().includes('window')
+                        } else if (activePartId === 'accents') {
+                            return matName.toLowerCase().includes('carbon') || matName.toLowerCase().includes('colour')
                         }
+                        return false
                     })
                     
                     if (matchesPart) {
@@ -138,8 +163,38 @@ export default function CarModel({ modelPath, partConfigs = [], activePartId }: 
             })
 
             if (targets.length > 0) {
-                // Focus on the first matching wheel or caliper mesh (typically front left/right)
-                bounds.refresh(targets[0]).fit()
+                // Focus on the first matching mesh, calculating a cushioned bounds box.
+                const box = new THREE.Box3().setFromObject(targets[0])
+                const center = new THREE.Vector3()
+                box.getCenter(center)
+                
+                const size = new THREE.Vector3()
+                box.getSize(size)
+                
+                // First expand the box proportionally by 75%
+                box.expandByVector(size.clone().multiplyScalar(0.75))
+                box.getSize(size)
+                
+                // Ensure a minimum bounding box size to prevent the camera from fitting
+                // closer than the OrbitControls' minDistance (2.0), avoiding snap-back jitter.
+                // We make the box slightly larger for windows/accents to see a broader view.
+                const minBoxSize = activePartId === 'windows' ? 3.0 : 2.4
+                const halfMin = minBoxSize / 2
+                
+                if (size.x < minBoxSize) {
+                    box.min.x = center.x - halfMin
+                    box.max.x = center.x + halfMin
+                }
+                if (size.y < minBoxSize) {
+                    box.min.y = center.y - halfMin
+                    box.max.y = center.y + halfMin
+                }
+                if (size.z < minBoxSize) {
+                    box.min.z = center.z - halfMin
+                    box.max.z = center.z + halfMin
+                }
+                
+                bounds.refresh(box).fit()
             }
         } else {
             // Focus out to show the full car
@@ -153,6 +208,7 @@ export default function CarModel({ modelPath, partConfigs = [], activePartId }: 
 export function CarViewerControls({ autoRotate = true }: { autoRotate?: boolean }) {
     return (
         <OrbitControls
+            makeDefault
             enableZoom
             enablePan={false}
             autoRotate={autoRotate}
