@@ -29,17 +29,17 @@ export default function InventoryPage() {
 
     return (
         <main className="min-h-screen bg-black text-white px-6 md:px-12 py-10">
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold">Showroom Inventory</h1>
-                <div className="flex gap-3">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+                <h1 className="text-2xl sm:text-3xl font-bold">Showroom Inventory</h1>
+                <div className="flex gap-2.5 sm:gap-3 flex-wrap items-center">
                     <Link
                         href="/compare"
-                        className="flex items-center gap-2 text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full transition-colors"
+                        className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm bg-white/10 hover:bg-white/20 px-3.5 py-2 sm:px-4 sm:py-2 rounded-full transition-colors shadow-md"
                     >
-                        <GitCompare size={16} /> Compare ({compareCount})
+                        <GitCompare size={14} className="sm:w-4 sm:h-4" /> Compare ({compareCount})
                     </Link>
-                    <span className="flex items-center gap-2 text-sm bg-white/10 px-4 py-2 rounded-full">
-                        <Heart size={16} /> {favoriteCount} Saved
+                    <span className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm bg-white/10 px-3.5 py-2 sm:px-4 sm:py-2 rounded-full shadow-md">
+                        <Heart size={14} className="sm:w-4 sm:h-4" /> {favoriteCount} Saved
                     </span>
                 </div>
             </div>

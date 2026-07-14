@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useParams, notFound } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Heart, GitCompare } from 'lucide-react'
 import { getCarById } from '@/data/cars'
 import { useConfigStore } from '@/store/useConfigStore'
@@ -35,6 +35,7 @@ export default function CarDetailPage() {
 
     // Lifted active tab state to coordinate camera zoom and UI tabs
     const [activeTab, setActiveTab] = useState(() => car?.parts[0]?.id ?? 'body')
+    const [showSpecs, setShowSpecs] = useState(false)
 
     if (!car) return notFound()
 
@@ -58,19 +59,19 @@ export default function CarDetailPage() {
         <main className="relative h-screen w-full overflow-hidden bg-black text-white">
             <Link
                 href="/inventory"
-                className="absolute top-10 left-10 z-10 flex items-center gap-2 text-white/70 hover:text-white transition-colors"
+                className="absolute top-4 left-4 lg:top-10 lg:left-10 z-10 flex items-center gap-1.5 lg:gap-2 text-xs lg:text-base text-white/70 hover:text-white bg-black/45 lg:bg-transparent px-3.5 py-2 lg:px-0 lg:py-0 rounded-full border border-white/10 lg:border-none backdrop-blur-md lg:backdrop-blur-none transition-colors shadow-lg"
             >
-                <ArrowLeft size={18} /> Back to Inventory
+                <ArrowLeft size={16} className="lg:w-[18px] lg:h-[18px]" /> Back to Inventory
             </Link>
 
             <ShowroomScene modelPath={car.modelPath} partConfigs={partConfigs} activePartId={activeTab} />
 
-            <div className="absolute top-10 right-10 z-10 text-right space-y-3 max-w-sm">
+            <div className="absolute top-4 right-4 lg:top-10 lg:right-10 z-10 text-right space-y-2 lg:space-y-3 max-w-[180px] lg:max-w-sm">
                 <motion.h1
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2, duration: 0.7 }}
-                    className="text-4xl font-bold drop-shadow-lg"
+                    className="text-lg lg:text-4xl font-bold drop-shadow-lg"
                 >
                     {car.make} {car.model}
                 </motion.h1>
@@ -78,7 +79,7 @@ export default function CarDetailPage() {
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3, duration: 0.7 }}
-                    className="text-xl text-white/70"
+                    className="text-xs lg:text-xl text-white/70"
                 >
                     {car.trim} &middot; {car.year}
                 </motion.p>
@@ -86,39 +87,51 @@ export default function CarDetailPage() {
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4, duration: 0.7 }}
-                    className="text-3xl font-light"
+                    className="text-sm lg:text-3xl font-light text-white/90"
                 >
                     ${car.price.toLocaleString()}
                 </motion.p>
 
-                <div className="flex justify-end gap-2 pt-1">
+                <div className="flex justify-end items-center gap-2 pt-1">
+                    {/* Collapsible Specs Panel Trigger on Mobile */}
+                    <button
+                        onClick={() => setShowSpecs((prev) => !prev)}
+                        className={`lg:hidden px-3 py-2 text-[10px] tracking-wider font-bold rounded-full backdrop-blur-md transition-colors ${
+                            showSpecs ? 'bg-white text-black' : 'bg-white/10 text-white/80'
+                        }`}
+                    >
+                        SPECS
+                    </button>
                     <button
                         onClick={() => toggleFavorite(car.id)}
-                        className={`p-3 rounded-full backdrop-blur-md transition-colors ${
+                        className={`p-2.5 lg:p-3 rounded-full backdrop-blur-md transition-colors ${
                             isFavorite ? 'bg-red-500/80 text-white' : 'bg-white/10 text-white/70 hover:text-white'
                         }`}
                     >
-                        <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
+                        <Heart size={16} fill={isFavorite ? 'currentColor' : 'none'} className="lg:w-[18px] lg:h-[18px]" />
                     </button>
                     <button
                         onClick={() => toggleCompare(car.id)}
-                        className={`p-3 rounded-full backdrop-blur-md transition-colors ${
+                        className={`p-2.5 lg:p-3 rounded-full backdrop-blur-md transition-colors ${
                             isComparing ? 'bg-blue-500/80 text-white' : 'bg-white/10 text-white/70 hover:text-white'
                         }`}
                     >
-                        <GitCompare size={18} />
+                        <GitCompare size={16} className="lg:w-[18px] lg:h-[18px]" />
                     </button>
                 </div>
 
-                <div className="pt-3">
-                    <MagneticButton>Request Test Drive</MagneticButton>
+                <div className="pt-2 lg:pt-3">
+                    <MagneticButton>
+                        <span className="text-xs lg:text-sm">Request Test Drive</span>
+                    </MagneticButton>
                 </div>
 
+                {/* Desktop Specs Panel: Always visible on desktop (hidden on mobile) */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6 }}
-                    className="text-left bg-black/40 backdrop-blur-md rounded-xl p-4 mt-4 space-y-1.5 text-sm"
+                    className="hidden lg:block text-left bg-black/40 backdrop-blur-md rounded-xl p-4 mt-4 space-y-1.5 text-sm border border-white/5 shadow-2xl"
                 >
                     <SpecRow label="Engine" value={car.specs.engine} />
                     <SpecRow label="Horsepower" value={`${car.specs.horsepower} hp`} />
@@ -127,6 +140,26 @@ export default function CarDetailPage() {
                     <SpecRow label="Drivetrain" value={car.specs.drivetrain} />
                     <SpecRow label="Weight" value={`${car.specs.weightLbs.toLocaleString()} lbs`} />
                 </motion.div>
+
+                {/* Mobile Specs Panel: Toggleable on mobile (hidden on desktop) */}
+                <AnimatePresence>
+                    {showSpecs && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                            exit={{ opacity: 0, height: 0, scale: 0.95 }}
+                            transition={{ duration: 0.25 }}
+                            className="lg:hidden text-left bg-black/80 backdrop-blur-xl border border-white/10 rounded-xl p-4 mt-3 space-y-1.5 text-[11px] shadow-2xl"
+                        >
+                            <SpecRow label="Engine" value={car.specs.engine} />
+                            <SpecRow label="Horsepower" value={`${car.specs.horsepower} hp`} />
+                            <SpecRow label="0&ndash;60 mph" value={`${car.specs.zeroToSixty}s`} />
+                            <SpecRow label="Top Speed" value={`${car.specs.topSpeedMph} mph`} />
+                            <SpecRow label="Drivetrain" value={car.specs.drivetrain} />
+                            <SpecRow label="Weight" value={`${car.specs.weightLbs.toLocaleString()} lbs`} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             <ConfiguratorPanel
