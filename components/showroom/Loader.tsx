@@ -4,27 +4,47 @@ import { motion, AnimatePresence, useMotionValue, useTransform, animate } from '
 import { useProgress } from '@react-three/drei'
 
 export default function Loader() {
-  const { progress } = useProgress()
+  const { active, progress } = useProgress()
+  const [targetProgress, setTargetProgress] = useState(0)
   const [show, setShow] = useState(true)
   const [display, setDisplay] = useState(0)
   const motionProgress = useMotionValue(0)
   const lineWidth = useTransform(motionProgress, [0, 100], ['0%', '100%'])
 
+  // Monitor loading progress and enforce monotonic updates (only increasing).
+  // This ignores Drei's initial progress=100 idle state before the assets register.
   useEffect(() => {
-    const controls = animate(motionProgress, progress, {
-      duration: 0.6,
+    const updateProgress = () => {
+      if (active) {
+        setTargetProgress((prev) => Math.max(prev, progress))
+      } else if (progress === 100) {
+        setTargetProgress(100)
+      }
+    }
+    
+    // We defer the state update using requestAnimationFrame to prevent ESLint warnings
+    // about synchronous cascading state updates inside effects.
+    const frameId = requestAnimationFrame(updateProgress)
+    return () => cancelAnimationFrame(frameId)
+  }, [progress, active])
+
+  // Animate the displayed progress number smoothly over time
+  useEffect(() => {
+    const controls = animate(motionProgress, targetProgress, {
+      duration: 1.0, // Smooth duration for ticks
       ease: 'easeOut',
       onUpdate: (v) => setDisplay(Math.round(v)),
     })
     return controls.stop
-  }, [progress])
+  }, [targetProgress, motionProgress])
 
+  // Once the visual display counts all the way to 100, smoothly close the loading screen
   useEffect(() => {
-    if (progress === 100) {
-      const timeout = setTimeout(() => setShow(false), 1000)
+    if (display === 100) {
+      const timeout = setTimeout(() => setShow(false), 800)
       return () => clearTimeout(timeout)
     }
-  }, [progress])
+  }, [display])
 
   return (
     <AnimatePresence>
